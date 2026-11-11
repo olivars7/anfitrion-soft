@@ -272,6 +272,23 @@ export default function LandingPage() {
         </div>
       </main>
 
+      {/* ══ FOOTER — WhatsApp contact ════════════════════════════════════════ */}
+      <footer className="lnd-footer">
+        <div className="w">
+          <p className="lnd-footer-text">
+            ¿Dudas?{' '}
+            <a
+              href="https://wa.me/526646947418"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="lnd-footer-link"
+            >
+              Escríbeme al WhatsApp: 664 694 7418
+            </a>
+          </p>
+        </div>
+      </footer>
+
       {/* ══ MOBILE OVERLAY ═══════════════════════════════════════════════════ */}
       {ticketProps && ticketOpen && (
         <div className="tkt-overlay" onClick={() => setTicketOpen(false)}>
@@ -298,6 +315,24 @@ export default function LandingPage() {
           display: flex;
           flex-direction: column;
         }
+
+        /* FOOTER */
+        .lnd-footer {
+          padding-block: 20px;
+          border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .lnd-footer-text {
+          margin: 0;
+          font-size: 13px;
+          color: rgba(255,255,255,0.35);
+        }
+        .lnd-footer-link {
+          color: #25D366;
+          text-decoration: none;
+          font-weight: 600;
+          transition: color .15s;
+        }
+        .lnd-footer-link:hover { color: #1ebe5d; }
 
         /* ADMIN GHOST BUTTON */
         .adm-wrap { position: fixed; top: 18px; right: 18px; z-index: 200; }

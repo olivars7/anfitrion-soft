@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase, db } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import UniqueLoading from '@/components/ui/morph-loading'
-import { Plus, CalendarDays, MapPin, Users, Ticket, LogOut, Power } from 'lucide-react'
+import { Plus, CalendarDays, MapPin, Users, Ticket, LogOut } from 'lucide-react'
 import type { Database } from '@/lib/database.types'
 
 const SELECTED_EVENT_KEY = 'selected_event_id'
@@ -135,21 +135,58 @@ export default function HomePage() {
               const meta = STATUS_META[ev.status]
               const isToggling = toggling === ev.id
               const canToggle = ev.status === 'active' || ev.status === 'closed'
+              const isActive = ev.status === 'active'
               return (
-                <div key={ev.id} className="relative event-card group">
-                  <button
-                    onClick={() => router.push(`/${ev.slug}/dashboard`)}
-                    className="w-full text-left p-5"
-                  >
-                    {/* Top row: name + status */}
+                <div
+                  key={ev.id}
+                  className="event-card group cursor-pointer"
+                  onClick={() => router.push(`/${ev.slug}/dashboard`)}
+                >
+                  <div className="p-5">
+                    {/* Top row: name + switch (normal flow, no absolute) */}
                     <div className="flex items-start justify-between gap-3 mb-3">
-                      <h2 className="text-base font-bold text-white leading-snug group-hover:text-white">
+                      <h2 className="text-base font-bold text-white leading-snug">
                         {ev.name}
                       </h2>
-                      <span className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap mt-0.5 ${meta.text}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
-                        {meta.label}
-                      </span>
+
+                      {/* Toggle switch */}
+                      {canToggle ? (
+                        <button
+                          onClick={(e) => openConfirm(ev, e)}
+                          disabled={isToggling}
+                          title={isActive ? 'Cerrar evento' : 'Activar evento'}
+                          className="shrink-0 flex flex-col items-center gap-0.5 disabled:opacity-40 focus:outline-none"
+                        >
+                          {/* Track */}
+                          <div
+                            className={`
+                              relative w-9 h-5 rounded-full transition-colors duration-300
+                              ${isActive ? 'bg-[#39ff14]/25 border border-[#39ff14]/50' : 'bg-[#ff4040]/15 border border-[#ff4040]/30'}
+                              ${isToggling ? 'animate-pulse' : ''}
+                            `}
+                          >
+                            {/* Thumb */}
+                            <span
+                              className={`
+                                absolute top-[3px] w-3.5 h-3.5 rounded-full transition-all duration-300
+                                ${isActive
+                                  ? 'left-[18px] bg-[#39ff14] shadow-[0_0_6px_rgba(57,255,20,0.7)]'
+                                  : 'left-[3px] bg-[#ff4040] shadow-[0_0_6px_rgba(255,64,64,0.6)]'
+                                }
+                              `}
+                            />
+                          </div>
+                          {/* Label */}
+                          <span className={`text-[9px] font-semibold uppercase tracking-wider ${isActive ? 'text-[#39ff14]/70' : 'text-[#ff4040]/60'}`}>
+                            {isActive ? 'Activo' : 'Cerrado'}
+                          </span>
+                        </button>
+                      ) : (
+                        <span className={`shrink-0 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap mt-0.5 ${meta.text}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
+                          {meta.label}
+                        </span>
+                      )}
                     </div>
 
                     {/* Details grid */}
@@ -176,28 +213,7 @@ export default function HomePage() {
                     <p className="mt-3 text-[10px] font-mono text-[#444] truncate">
                       /{ev.slug}
                     </p>
-                  </button>
-
-                  {/* Toggle active/closed button */}
-                  {canToggle && (
-                    <button
-                      onClick={(e) => openConfirm(ev, e)}
-                      disabled={isToggling}
-                      title={ev.status === 'active' ? 'Cerrar evento' : 'Activar evento'}
-                      className={`
-                        absolute bottom-3.5 right-4
-                        flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold
-                        border transition-colors disabled:opacity-40
-                        ${ev.status === 'active'
-                          ? 'border-[#ff4040]/40 text-[#ff4040]/70 hover:bg-[#ff4040]/10 hover:text-[#ff4040] hover:border-[#ff4040]/60'
-                          : 'border-[#39ff14]/30 text-[#39ff14]/60 hover:bg-[#39ff14]/10 hover:text-[#39ff14] hover:border-[#39ff14]/50'
-                        }
-                      `}
-                    >
-                      <Power size={10} className={isToggling ? 'animate-pulse' : ''} />
-                      {ev.status === 'active' ? 'Cerrar' : 'Activar'}
-                    </button>
-                  )}
+                  </div>
                 </div>
               )
             })
